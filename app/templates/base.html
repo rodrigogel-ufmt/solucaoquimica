@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solução Química</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <header class="site-header">
+        <h1 class="site-title">Solução Química</h1>
+        <nav class="navbar">
+            <ul class="navbar-list">
+                <li><a href="{% url 'index' %}">Início</a></li>
+                <li><a href="{% url 'mistura' %}">Mistura</a></li>
+                <li><a href="{% url 'diluicao' %}">Diluição</a></li>
+                <li><a href="{% url 'conversao' %}">Conversão</a></li>
+                <li><a href="{% url 'relatorio' %}">Relatório</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main class="site-main">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">
+        <p>&copy; 2024 Solução Química</p>
+    </footer>
+</body>
+</html>

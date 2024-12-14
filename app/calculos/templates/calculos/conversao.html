@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Conversões de Unidades</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Converter</button>
+</form>
+
+{% if resultado %}
+    <h3>Resultado:</h3>
+    <p><strong>{{ resultado }} {{ form.cleaned_data.unidade_destino }}</strong></p>
+    <h4>Explicação:</h4>
+    <pre>{{ explicacao }}</pre>
+{% endif %}
+{% endblock %}

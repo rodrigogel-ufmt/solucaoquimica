@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Teorias Químicas - Conceitos e Aplicações</h1>
+
+    <div class="row">
+        <div class="col-md-3">
+            <nav class="nav flex-column menu-lateral border-end pe-3">
+                <h4 class="menu-title text-center">Menu de Teorias</h4>
+                <a class="nav-link" id="menu-concentracao" href="javascript:void(0);" onclick="mostrarTeoria('concentracao')">Concentração</a>
+                <a class="nav-link" id="menu-mistura" href="javascript:void(0);" onclick="mostrarTeoria('mistura')">Mistura de Soluções</a>
+                <a class="nav-link" id="menu-diluicao" href="javascript:void(0);" onclick="mostrarTeoria('diluicao')">Diluição</a>
+                <a class="nav-link" id="menu-conversao" href="javascript:void(0);" onclick="mostrarTeoria('conversao')">Conversão de Unidades</a>
+            </nav>
+        </div>
+
+        <div class="col-md-9">
+            <div id="conteudo-teorias">
+                <div id="teoria-concentracao" class="teoria active">
+                    <h2 class="text-primary">Concentração de Soluções</h2>
+                    <p>A concentração de uma solução mede a quantidade de soluto dissolvido em um volume definido de solvente.</p>
+                    <h4 class="mt-4">Fórmulas Importantes</h4>
+                    <ul>
+                        <li>Molaridade: \( M = \frac{\text{mol do soluto}}{\text{volume da solução (L)}} \)</li>
+                    </ul>
+                </div>
+                <div id="teoria-mistura" class="teoria" style="display: none;">
+                    <h2 class="text-primary">Mistura de Soluções</h2>
+                    <p>Ao misturar soluções, a concentração final depende das concentrações e volumes originais.</p>
+                </div>
+                <div id="teoria-diluicao" class="teoria" style="display: none;">
+                    <h2 class="text-primary">Diluição de Soluções</h2>
+                    <p>A diluição reduz a concentração de uma solução adicionando solvente.</p>
+                </div>
+                <div id="teoria-conversao" class="teoria" style="display: none;">
+                    <h2 class="text-primary">Conversão de Unidades</h2>
+                    <p>Conversão de unidades é essencial para trabalhar com diferentes formas de concentração.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function mostrarTeoria(teoria) {
+        document.querySelectorAll('.teoria').forEach(div => div.style.display = 'none');
+        document.getElementById('teoria-' + teoria).style.display = 'block';
+        document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+        document.getElementById('menu-' + teoria).classList.add('active');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => mostrarTeoria('concentracao'));
+</script>
+{% endblock %}

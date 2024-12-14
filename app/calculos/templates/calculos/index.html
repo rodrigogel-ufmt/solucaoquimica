@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Título -->
+    <div class="text-center mb-4">
+        <h1 class="display-4">Bem-vindo ao Portal de Ensino de Química</h1>
+        <p class="lead">Facilitamos o aprendizado e a aplicação de conceitos químicos por meio de ferramentas interativas e acessíveis.</p>
+    </div>
+
+    <!-- Funcionalidades -->
+    <section>
+        <h2 class="h3 mb-4">Funcionalidades</h2>
+        <p class="text-muted mb-4">Explore as ferramentas e recursos do portal:</p>
+        <ul class="list-unstyled">
+            <li>🔬 <strong>Simulação de Cálculos:</strong> Mistura de soluções, diluições e conversões de unidades.</li>
+            <li>📚 <strong>Recursos Educativos:</strong> Teorias químicas explicadas de forma clara e objetiva.</li>
+            <li>📊 <strong>Relatórios Automáticos:</strong> Geração de relatórios para análise posterior.</li>
+            <li>🌐 <strong>Fácil Acesso:</strong> Interface amigável e design responsivo.</li>
+        </ul>
+    </section>
+
+    <!-- Público-Alvo -->
+    <section class="mt-5">
+        <h3 class="h4 mb-3">Público-Alvo</h3>
+        <p>Este portal foi criado para estudantes, professores e profissionais que desejam aprofundar seus conhecimentos em Química, com foco na prática e na precisão nos cálculos laboratoriais.</p>
+    </section>
+
+    <!-- Chamadas para Ação -->
+    <div class="text-center mt-4">
+        <a href="{% url 'sobre_teorias' %}" class="btn btn-primary btn-lg mx-2">Saiba mais sobre as Teorias</a>
+    </div>
+</div>
+{% endblock %}

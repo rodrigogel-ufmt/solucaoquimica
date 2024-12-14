@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Cálculo de Diluição</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Calcular</button>
+</form>
+
+{% if resultado %}
+    <h3>Resultados:</h3>
+    <ul>
+        <li><strong>Volume Inicial (V₁):</strong> {{ resultado.volume_inicial }} L</li>
+        <!-- <li><strong>Volume de Solvente:</strong> {{ resultado.volume_solvente }} mL</li>
+        <li><strong>Volume Final (V₂):</strong> {{ resultado.volume_final }} mL</li> -->
+    </ul>
+    <h4>Explicação do Cálculo:</h4>
+    <pre>{{ explicacao }}</pre>
+{% endif %}
+{% endblock %}

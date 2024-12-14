@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="form-title">Mistura de Soluções</h2>
+<div class="form-container">
+    <form id="mistura-form" method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+            {{ form.substancia.label_tag }}
+            {{ form.substancia }}
+        </div>
+
+        <div class="form-group">
+            {{ form.temperatura.label_tag }}
+            {{ form.temperatura }}
+        </div>
+
+
+        <div id="solucoes-container">
+            {{ formset.management_form }}
+            {% for form in formset %}
+                <div class="solucao-item">
+                    {{ form.as_p }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="form-actions">
+            <button type="button" id="add-solucao" class="btn btn-secondary">Adicionar Solução</button>
+            <button type="submit" class="btn btn-primary">Calcular</button>
+        </div>
+    </form>
+
+    {% if resultado %}
+        <div class="result-container">
+            <h3>Resultados</h3>
+            <p><strong>Volume Total:</strong> {{ resultado.volume_total }} L</p>
+            <p><strong>Concentração Molar Resultante:</strong> {{ resultado.concentracao_molar }} mol/L</p>
+            <p><strong>Temperatura:</strong> {{ resultado.temperatura }} °C</p>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const container = document.getElementById('solucoes-container');
+        const addButton = document.getElementById('add-solucao');
+        const totalForms = document.getElementById('id_form-TOTAL_FORMS'); // Campo de controle de quantidade de formulários
+        const emptyFormHtml = container.querySelector('.solucao-item').outerHTML; // Modelo do formulário vazio
+
+        // Função para adicionar uma nova solução
+        addButton.addEventListener('click', function () {
+            const currentFormCount = parseInt(totalForms.value, 10); // Quantidade atual de formulários
+            const newFormHtml = emptyFormHtml.replace(/-0-/g, `-${currentFormCount}-`).replace(/__prefix__/g, currentFormCount);
+
+            const newFormDiv = document.createElement('div');
+            newFormDiv.classList.add('solucao-item');
+            newFormDiv.innerHTML = newFormHtml;
+            container.appendChild(newFormDiv); // Adiciona o novo formulário ao container
+
+            totalForms.value = currentFormCount + 1; // Incrementa a quantidade total de formulários
+        });
+    });
+</script>
+{% endblock %}
