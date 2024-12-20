@@ -4,7 +4,7 @@ from django.forms import formset_factory
 from .models import Substancia
 
 class MisturaForm(forms.Form):
-    substancia = forms.ModelChoiceField(queryset=Substancia.objects.all(), label="Substância")
+    substancia = forms.ModelChoiceField(queryset=Substancia.objects.all().distinct(), label="Substância", to_field_name='nome')
     temperatura = forms.ChoiceField(label="Temperatura (°C)", choices=[])
 
 class DilucaoForm(forms.Form):

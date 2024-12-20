@@ -1,49 +1,53 @@
 from django.db import models
 
 class Substancia(models.Model):
-    id = models.AutoField(primary_key=True) 
-    nome = models.CharField(max_length=100)  # Nome da substância
-    formula = models.CharField(max_length=50)  # Fórmula química
-    massa_molar = models.DecimalField(max_digits=10, decimal_places=5)  # Massa molar (g/mol)
-    ppm_total = models.DecimalField(max_digits=10, decimal_places=4)  # PPM total da substância
-    temperatura = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)  # Temperatura (ºC) opcional
-    densidade = models.DecimalField(max_digits=10, decimal_places=5, null=True, blank=True)  # Densidade (g/mL)
-    concentracao = models.DecimalField(max_digits=10, decimal_places=5, null=True, blank=True)  # Concentração (mol/L) opcional
-    
+    nome = models.CharField(max_length=100, verbose_name="Nome da Substância")
+    formula = models.CharField(max_length=50, blank=True, null=True, verbose_name="Fórmula Química")
+    descricao = models.TextField(blank=True, null=True, verbose_name="Descrição")
+
     def __str__(self):
         return self.nome
 
-    # Método para calcular a molaridade
-    def calcular_molaridade(self):
-        # return self.ppm_total / (self.massa_molecular * 1000)    
-        return self.concentracao/100*self.densidade*self.ppm_total/self.massa_molecular
+    class Meta:
+        verbose_name = "Substância"
+        verbose_name_plural = "Substâncias"
 
-    def converter_para_mol_por_litro(self, quantidade):
-        return quantidade / self.massa_molar
+# Modelo para temperaturas
+class Temperatura(models.Model):
+    valor_celsius = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Temperatura (°C)")
 
-    def converter_concentracao(self, quantidade, unidade, fator_equivalencia=1):
-        if unidade == 'g/L':
-            return self.converter_para_mol_por_litro(quantidade)
-        elif unidade == '%':
-            return None
-        elif unidade == 'ppm':
-            return self.converter_para_mol_por_litro(quantidade / 1000)  # Converte mg/L para g/L
-        elif unidade == 'mg/L':
-            return self.converter_para_mol_por_litro(quantidade / 1000)
-        elif unidade == 'N':
-            return quantidade * fator_equivalencia  # Converte N para mol/L
-        else:
-            raise ValueError("Unidade não suportada.")
+    def __str__(self):
+        return f"{self.valor_celsius} °C"
+
+    class Meta:
+        verbose_name = "Temperatura"
+        verbose_name_plural = "Temperaturas"
+
+# Modelo para densidades
+class Densidade(models.Model):
+    substancia = models.ForeignKey(Substancia, on_delete=models.CASCADE, related_name="densidades")
+    temperatura = models.ForeignKey(Temperatura, on_delete=models.CASCADE, related_name="densidades")
+    concentracao_percentual = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Concentração (%)")
+    densidade = models.DecimalField(max_digits=6, decimal_places=4, verbose_name="Densidade (g/cm³)")
+
+    class Meta:
+        unique_together = ('substancia', 'temperatura', 'concentracao_percentual')  # Evita duplicação
+        verbose_name = "Densidade"
+        verbose_name_plural = "Densidades"
+
+    def __str__(self):
+        return f"{self.substancia.nome} - {self.temperatura.valor_celsius} °C - {self.concentracao_percentual}%"
+
 
 class UnidadeConversao:
     conversoes_concentracao = {
-        'mg/L': 1,
-        'g/L': 1e-3,
-        'kg/L': 1e-6,
-        'mg/m³': 1e3,
-        'g/m³': 1,
-        'kg/m³': 1e-3,
-        'mol/L': 1,
+        'mg/L': 1e-3,
+        'g/L': 1,
+        'kg/L': 1e3,
+        'mg/m³': 1e-6,
+        'g/m³': 1e-3,
+        'kg/m³': 1,
+        'mol/L': 1,  # Assumindo que mol/L é equivalente a g/L para simplificação
         'ppm': 1e-3,
         '%': 10,
     }

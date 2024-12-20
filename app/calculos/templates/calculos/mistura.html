@@ -15,7 +15,6 @@
             {{ form.temperatura }}
         </div>
 
-
         <div id="solucoes-container">
             {{ formset.management_form }}
             {% for form in formset %}
@@ -46,20 +45,22 @@
         const container = document.getElementById('solucoes-container');
         const addButton = document.getElementById('add-solucao');
         const totalForms = document.getElementById('id_form-TOTAL_FORMS'); // Campo de controle de quantidade de formulários
-        const emptyFormHtml = container.querySelector('.solucao-item').outerHTML; // Modelo do formulário vazio
+        const emptyFormHtml = container.querySelector('.solucao-item') ? container.querySelector('.solucao-item').outerHTML : ''; // Modelo do formulário vazio
 
-        // Função para adicionar uma nova solução
-        addButton.addEventListener('click', function () {
-            const currentFormCount = parseInt(totalForms.value, 10); // Quantidade atual de formulários
-            const newFormHtml = emptyFormHtml.replace(/-0-/g, `-${currentFormCount}-`).replace(/__prefix__/g, currentFormCount);
+        if (addButton && container && totalForms && emptyFormHtml) {
+            // Função para adicionar uma nova solução
+            addButton.addEventListener('click', function () {
+                const currentFormCount = parseInt(totalForms.value, 10); // Quantidade atual de formulários
+                const newFormHtml = emptyFormHtml.replace(/-0-/g, `-${currentFormCount}-`).replace(/__prefix__/g, currentFormCount);
 
-            const newFormDiv = document.createElement('div');
-            newFormDiv.classList.add('solucao-item');
-            newFormDiv.innerHTML = newFormHtml;
-            container.appendChild(newFormDiv); // Adiciona o novo formulário ao container
+                const newFormDiv = document.createElement('div');
+                newFormDiv.classList.add('solucao-item');
+                newFormDiv.innerHTML = newFormHtml;
+                container.appendChild(newFormDiv); // Adiciona o novo formulário ao container
 
-            totalForms.value = currentFormCount + 1; // Incrementa a quantidade total de formulários
-        });
+                totalForms.value = currentFormCount + 1; // Incrementa a quantidade total de formulários
+            });
+        }
     });
 </script>
 {% endblock %}

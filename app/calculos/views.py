@@ -17,17 +17,20 @@ def mistura(request):
     # Define o formset para múltiplas entradas de solução
     SolucaoFormset = formset_factory(SolucaoForm, extra=1)
     formset = SolucaoFormset()  # Instanciando um formset vazio inicialmente
+    form = MisturaForm(request.POST)
     resultado = None
 
     # Configurações fixas
     temperatura = 20  # Temperatura fixa em °C
     massa_molar_h2so4 = 98.08  # Massa molar do Ácido Sulfúrico (H2SO4)
-
     if request.method == 'POST':
         formset = SolucaoFormset(request.POST)  # Preenchendo o formset com os dados do POST
-        if formset.is_valid():
+        if form.is_valid() and formset.is_valid():
             total_volume = 0
             concentracao_molar_acumulada = 0
+
+            substancia = form.cleaned_data['substancia']
+            temperatura = form.cleaned_data['temperatura']
 
             # Processar cada formulário individualmente
             for form in formset:
@@ -66,7 +69,7 @@ def mistura(request):
                 'densidade': None,  # Pode adicionar lógica para calcular a densidade se necessário
             }
 
-    return render(request, 'calculos/mistura.html', {'formset': formset, 'resultado': resultado})
+    return render(request, 'calculos/mistura.html', {'form': form,'formset': formset, 'resultado': resultado})
 
 # def diluicao(request):
 #     form = DilucaoForm()
