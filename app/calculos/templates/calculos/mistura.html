@@ -18,49 +18,43 @@
         <div id="solucoes-container">
             {{ formset.management_form }}
             {% for form in formset %}
-                <div class="solucao-item">
+                <div class="solucao-item card">
+                    <h3>Solução {{ forloop.counter }}</h3>
                     {{ form.as_p }}
                 </div>
             {% endfor %}
         </div>
-
-        <div class="form-actions">
-            <button type="button" id="add-solucao" class="btn btn-secondary">Adicionar Solução</button>
-            <button type="submit" class="btn btn-primary">Calcular</button>
-        </div>
     </form>
+</div>
 
-    {% if resultado %}
-        <div class="result-container">
-            <h3>Resultados</h3>
-            <p><strong>Volume Total:</strong> {{ resultado.volume_total }} L</p>
-            <p><strong>Concentração Molar Resultante:</strong> {{ resultado.concentracao_molar }} mol/L</p>
-            <p><strong>Temperatura:</strong> {{ resultado.temperatura }} °C</p>
-        </div>
-    {% endif %}
+<div class="form-actions fixed-actions">
+    <button type="button" id="add-solucao" class="btn btn-secondary">Adicionar Solução</button>
+    <button type="submit" class="btn btn-primary">Calcular</button>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const container = document.getElementById('solucoes-container');
-        const addButton = document.getElementById('add-solucao');
-        const totalForms = document.getElementById('id_form-TOTAL_FORMS'); // Campo de controle de quantidade de formulários
-        const emptyFormHtml = container.querySelector('.solucao-item') ? container.querySelector('.solucao-item').outerHTML : ''; // Modelo do formulário vazio
+document.addEventListener('DOMContentLoaded', function() {
+    let solucaoCount = {{ formset.total_form_count }};
+    const solucoesContainer = document.getElementById('solucoes-container');
+    const addSolucaoButton = document.getElementById('add-solucao');
 
-        if (addButton && container && totalForms && emptyFormHtml) {
-            // Função para adicionar uma nova solução
-            addButton.addEventListener('click', function () {
-                const currentFormCount = parseInt(totalForms.value, 10); // Quantidade atual de formulários
-                const newFormHtml = emptyFormHtml.replace(/-0-/g, `-${currentFormCount}-`).replace(/__prefix__/g, currentFormCount);
+    addSolucaoButton.addEventListener('click', function() {
+        solucaoCount++;
+        const firstSolucao = solucoesContainer.querySelector('.solucao-item').cloneNode(true);
+        firstSolucao.querySelector('h3').textContent = `Solução ${solucaoCount}`;
+        
+        // Update the names and ids of the cloned inputs
+        const inputs = firstSolucao.querySelectorAll('input');
+        inputs.forEach(input => {
+            const name = input.getAttribute('name').replace(/\d+/, solucaoCount - 1);
+            const id = input.getAttribute('id').replace(/\d+/, solucaoCount - 1);
+            input.setAttribute('name', name);
+            input.setAttribute('id', id);
+            input.value = ''; // Clear the value
+        });
 
-                const newFormDiv = document.createElement('div');
-                newFormDiv.classList.add('solucao-item');
-                newFormDiv.innerHTML = newFormHtml;
-                container.appendChild(newFormDiv); // Adiciona o novo formulário ao container
-
-                totalForms.value = currentFormCount + 1; // Incrementa a quantidade total de formulários
-            });
-        }
+        solucoesContainer.appendChild(firstSolucao);
     });
+});
 </script>
 {% endblock %}

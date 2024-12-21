@@ -1,11 +1,12 @@
 from django import forms
 from django.forms import formset_factory
 
-from .models import Substancia
+from .models import Substancia, Temperatura
 
 class MisturaForm(forms.Form):
     substancia = forms.ModelChoiceField(queryset=Substancia.objects.all().distinct(), label="Substância", to_field_name='nome')
-    temperatura = forms.ChoiceField(label="Temperatura (°C)", choices=[])
+    temperatura = forms.ModelChoiceField(queryset=Temperatura.objects.values_list('valor_celsius', flat=True).distinct(), label="Temperatura (°C)")
+
 
 class DilucaoForm(forms.Form):
     concentracao_inicial = forms.FloatField(label="Concentração Inicial")

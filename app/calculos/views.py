@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from .forms import MisturaForm, DilucaoForm, ConversaoForm, SolucaoForm, SolucaoFormset
 from django.forms import formset_factory
 from reportlab.pdfgen import canvas
-from .models import UnidadeConversao
+from .models import UnidadeConversao, Densidade
 
 
 def index(request):
@@ -48,7 +48,17 @@ def mistura(request):
                     elif unidade_concentracao == 'ppm':
                         concentracao_mol_l = (concentracao / 1000) / massa_molar_h2so4
                     elif unidade_concentracao == '%':
-                        concentracao_mol_l = (concentracao * 10) / massa_molar_h2so4
+                        # Buscar a densidade no banco de dados
+                        densidade_obj = Densidade.objects.filter(
+                            substancia=substancia,
+                            temperatura=temperatura,
+                            concentracao_percentual=concentracao
+                        ).first()
+                        if densidade_obj:
+                            densidade = densidade_obj.densidade
+                            concentracao_mol_l = (concentracao * densidade * 10) / massa_molar_h2so4
+                        else:
+                            concentracao_mol_l = 0 
                     else:
                         concentracao_mol_l = 0  # Caso unidade não seja reconhecida
 
