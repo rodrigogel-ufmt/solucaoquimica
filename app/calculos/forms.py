@@ -5,8 +5,10 @@ from .models import Substancia, Temperatura
 
 class MisturaForm(forms.Form):
     substancia = forms.ModelChoiceField(queryset=Substancia.objects.all().distinct(), label="Substância", to_field_name='nome')
-    temperatura = forms.ModelChoiceField(queryset=Temperatura.objects.values_list('valor_celsius', flat=True).distinct(), label="Temperatura (°C)")
-
+    temperatura = forms.ChoiceField(
+        choices=[(t.valor_celsius, t.valor_celsius) for t in Temperatura.objects.all()],
+        label="Temperatura (°C)"
+    )
 
 class DilucaoForm(forms.Form):
     concentracao_inicial = forms.FloatField(label="Concentração Inicial")

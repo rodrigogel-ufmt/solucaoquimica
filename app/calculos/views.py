@@ -12,17 +12,17 @@ def index(request):
 from django.forms import formset_factory
 from django.shortcuts import render
 from .forms import SolucaoForm
-
 def mistura(request):
     # Define o formset para múltiplas entradas de solução
     SolucaoFormset = formset_factory(SolucaoForm, extra=1)
     formset = SolucaoFormset()  # Instanciando um formset vazio inicialmente
-    form = MisturaForm(request.POST)
+    form = MisturaForm(request.POST or None)
     resultado = None
 
     # Configurações fixas
     temperatura = 20  # Temperatura fixa em °C
     massa_molar_h2so4 = 98.08  # Massa molar do Ácido Sulfúrico (H2SO4)
+
     if request.method == 'POST':
         formset = SolucaoFormset(request.POST)  # Preenchendo o formset com os dados do POST
         if form.is_valid() and formset.is_valid():
@@ -33,12 +33,11 @@ def mistura(request):
             temperatura = form.cleaned_data['temperatura']
 
             # Processar cada formulário individualmente
-            for form in formset:
-                if form.cleaned_data:  # Garantir que os dados foram preenchidos
-                    volume = form.cleaned_data['volume']
-                    concentracao = form.cleaned_data['concentracao']
-                    unidade_concentracao = form.cleaned_data['unidade_concentracao']
-                    unidade_volume = form.cleaned_data['unidade_volume']
+            for solucao_form in formset:
+                if solucao_form.cleaned_data:  # Garantir que os dados foram preenchidos
+                    volume = solucao_form.cleaned_data['volume']
+                    concentracao = solucao_form.cleaned_data['concentracao']
+                    unidade_concentracao = solucao_form.cleaned_data['unidade_concentracao']
                     
                     # Conversão da concentração para mol/L
                     if unidade_concentracao == 'g/L':
@@ -48,7 +47,7 @@ def mistura(request):
                     elif unidade_concentracao == 'ppm':
                         concentracao_mol_l = (concentracao / 1000) / massa_molar_h2so4
                     elif unidade_concentracao == '%':
-                        # Buscar a densidade no banco de dados
+                        # Busca a densidade no banco de dados
                         densidade_obj = Densidade.objects.filter(
                             substancia=substancia,
                             temperatura=temperatura,
@@ -78,12 +77,18 @@ def mistura(request):
                 'temperatura': temperatura,
                 'densidade': None,  # Pode adicionar lógica para calcular a densidade se necessário
             }
+        else:
+            print(form.errors)  # Para verificar erros de validação
+            print(formset.errors)
 
-    return render(request, 'calculos/mistura.html', {'form': form,'formset': formset, 'resultado': resultado})
-
-# def diluicao(request):
+    return render(request, 'calculos/mistura.html', {
+        'form': form,
+        'formset': formset,
+        'resultado': resultado
+    })
+#def diluicao(request):
 #     form = DilucaoForm()
-#     resultado = None
+#     resultado = Non
 #     explicacao = None
 
 #     if request.method == 'POST':

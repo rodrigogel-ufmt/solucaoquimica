@@ -15,4 +15,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . /app/
 
 # Expor a porta padrão do Django
-EXPOSE 8000
+EXPOSE 8000 5678

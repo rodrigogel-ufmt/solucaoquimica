@@ -24,14 +24,19 @@
                 </div>
             {% endfor %}
         </div>
+
+        <div class="form-actions fixed-actions">
+            <button type="button" id="add-solucao" class="btn btn-secondary">Adicionar Solução</button>
+            <button type="submit" class="btn btn-primary">Calcular</button>
+        </div>
     </form>
 </div>
-
-<div class="form-actions fixed-actions">
-    <button type="button" id="add-solucao" class="btn btn-secondary">Adicionar Solução</button>
-    <button type="submit" class="btn btn-primary">Calcular</button>
+{% if resultado %}
+<div class="result">
+    <h3>Resultado:</h3>
+    <p>{{ resultado }}</p>
 </div>
-
+{% endif %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     let solucaoCount = {{ formset.total_form_count }};
