@@ -1,17 +1,15 @@
+from decimal import Decimal
 from django.shortcuts import render
 from django.http import HttpResponse
 from .forms import MisturaForm, DilucaoForm, ConversaoForm, SolucaoForm, SolucaoFormset
 from django.forms import formset_factory
 from reportlab.pdfgen import canvas
-from .models import UnidadeConversao, Densidade
+from .models import Temperatura, UnidadeConversao, Densidade
 
 
 def index(request):
     return render(request, 'calculos/index.html')
 
-from django.forms import formset_factory
-from django.shortcuts import render
-from .forms import SolucaoForm
 def mistura(request):
     # Define o formset para múltiplas entradas de solução
     SolucaoFormset = formset_factory(SolucaoForm, extra=1)
@@ -21,13 +19,13 @@ def mistura(request):
 
     # Configurações fixas
     temperatura = 20  # Temperatura fixa em °C
-    massa_molar_h2so4 = 98.08  # Massa molar do Ácido Sulfúrico (H2SO4)
+    massa_molar_h2so4 = Decimal('98.08')  # Massa molar do Ácido Sulfúrico (H2SO4) convertida para Decimal
 
     if request.method == 'POST':
         formset = SolucaoFormset(request.POST)  # Preenchendo o formset com os dados do POST
         if form.is_valid() and formset.is_valid():
-            total_volume = 0
-            concentracao_molar_acumulada = 0
+            total_volume = Decimal('0')  # Inicializa o volume total como Decimal
+            concentracao_molar_acumulada = Decimal('0')  # Inicializa a concentração acumulada como Decimal
 
             substancia = form.cleaned_data['substancia']
             temperatura = form.cleaned_data['temperatura']
@@ -35,8 +33,8 @@ def mistura(request):
             # Processar cada formulário individualmente
             for solucao_form in formset:
                 if solucao_form.cleaned_data:  # Garantir que os dados foram preenchidos
-                    volume = solucao_form.cleaned_data['volume']
-                    concentracao = solucao_form.cleaned_data['concentracao']
+                    volume = Decimal(solucao_form.cleaned_data['volume'])  # Converte o volume para Decimal
+                    concentracao = Decimal(solucao_form.cleaned_data['concentracao'])  # Converte a concentração para Decimal
                     unidade_concentracao = solucao_form.cleaned_data['unidade_concentracao']
                     
                     # Conversão da concentração para mol/L
@@ -48,27 +46,28 @@ def mistura(request):
                         concentracao_mol_l = (concentracao / 1000) / massa_molar_h2so4
                     elif unidade_concentracao == '%':
                         # Busca a densidade no banco de dados
+                        temperatura_obj = Temperatura.objects.get(valor_celsius=temperatura)
                         densidade_obj = Densidade.objects.filter(
                             substancia=substancia,
-                            temperatura=temperatura,
+                            temperatura=temperatura_obj,
                             concentracao_percentual=concentracao
                         ).first()
                         if densidade_obj:
                             densidade = densidade_obj.densidade
-                            concentracao_mol_l = (concentracao * densidade * 10) / massa_molar_h2so4
+                            concentracao_mol_l = (concentracao * densidade * Decimal('10')) / massa_molar_h2so4
                         else:
-                            concentracao_mol_l = 0 
+                            concentracao_mol_l = Decimal('0')  # Se não encontrar densidade, usa 0
                     else:
-                        concentracao_mol_l = 0  # Caso unidade não seja reconhecida
+                        concentracao_mol_l = Decimal('0')  # Caso unidade não seja reconhecida
 
-                    total_volume += volume
-                    concentracao_molar_acumulada += concentracao_mol_l * volume
+                    total_volume += volume  # Adiciona o volume ao total
+                    concentracao_molar_acumulada += concentracao_mol_l * volume  # Acumula a concentração molar
 
             # Cálculo da concentração molar resultante, evitando divisão por zero
             if total_volume > 0:
                 concentracao_resultante_mol_l = concentracao_molar_acumulada / total_volume
             else:
-                concentracao_resultante_mol_l = 0
+                concentracao_resultante_mol_l = Decimal('0')
 
             # Resultado final
             resultado = {
