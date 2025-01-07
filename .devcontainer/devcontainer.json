@@ -9,6 +9,11 @@
 		"../docker-compose.yml",
 		"docker-compose.yml"
 	],
+	"extensions": [
+        "ms-python.python",
+        "ms-toolsai.jupyter",
+		"ms-python.debugpy"
+    ],
 
 	// The 'service' property is the name of the service for the container that VS Code should
 	// use. Update this value and .devcontainer/docker-compose.yml to the real service name.

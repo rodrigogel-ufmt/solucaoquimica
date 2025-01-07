@@ -19,7 +19,7 @@ def mistura(request):
 
     # Configurações fixas
     temperatura = 20  # Temperatura fixa em °C
-    massa_molar_h2so4 = Decimal('98.08')  # Massa molar do Ácido Sulfúrico (H2SO4) convertida para Decimal
+    massa_molar_h2so4 = Decimal('98')  # Massa molar do Ácido Sulfúrico (H2SO4) convertida para Decimal
 
     if request.method == 'POST':
         formset = SolucaoFormset(request.POST)  # Preenchendo o formset com os dados do POST
